@@ -2,16 +2,14 @@
 \documentclass[12pt,ngerman]{dtk}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
-\usepackage{showexpl,ifthen}
 \usepackage{xspace,listings,xcolor}
 \usepackage{babel}
 \usepackage{microtype}
-\usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{csquotes}
 \usepackage{url}
 \usepackage{calc,tikz}
-\usetikzlibrary{positioning,calc}
+\usetikzlibrary{perspective}
 
 \definecolor{hellgelb}{rgb}{1,1,0.8}
 \definecolor{colKeys}{rgb}{0,0,1}
@@ -45,7 +43,7 @@
            {ü}{{\"u}}1
 }
 
-\title{3D-Objekte mit TikZ -- Eine \TeX nische Reise} 
+\title{3D-Objekte mit TikZ am Beispiel} 
 \Author{Uwe}{Ziegenhagen}{Köln}
 
 %\markboth{Python\TeX}{Python\TeX}
@@ -54,24 +52,254 @@
 \maketitle
 
 \begin{abstract}
-Ausgehend von eine Frage im \LaTeX-Forum von Reddit betrachte ich in diesem Artikel einige Möglichkeiten, 3D-Objekte \enquote{auf Papier} respektive ins PDF zu bringen.
+Ausgehend von einer Frage im \LaTeX-Forum von Reddit betrachte ich in diesem Artikel einige Möglichkeiten, 3D-Objekte \enquote{auf Papier} respektive ins PDF zu bringen.
 \end{abstract}
 
-\section{Der erste Versuch}
+\section{Die ersten Versuche}
 
-Es war im März diesen Jahres, als ein Nutzer im \LaTeX-Forum von Reddit (\url{https://www.reddit.com/r/LaTeX/}) fragte, wie man Grafiken analog zur der in Abbildung \ref{fig:template} in \LaTeX\ erstellen könnte.  Ich nahm dies als willkommene Gelegenheit, mal wieder ein wenig zu \enquote{T(r)ikZen}. TikZ bietet verschiedene Möglichkeiten für die Erstellung,  die wir uns im folgenden einmal anschauen werden.
+\enquote{TikZ} war die einhellige Antwort, als ein Nutzer im \LaTeX-Forum von Reddit (\url{www.reddit.com/r/LaTeX/}) fragte, wie man denn Grafiken analog zur der in Abbildung \ref{fig:template} in \LaTeX\ erstellen könnte.  Ich nahm dies als willkommene Gelegenheit, mal wieder ein wenig zu \enquote{T(r)ikZen}. TikZ bietet verschiedene Möglichkeiten für die Erstellung,  die wir uns im folgenden einmal anschauen werden.
 
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=0.75\textwidth]{template}
-\caption{Die gewünschte Grafik, hier behelfsweise mit Affinity Designer erzeugt}\label{fig:template}
+\caption{Die gesuchte Grafik, hier behelfsweise mit Affinity Designer erzeugt}\label{fig:template}
 \end{center}
 \end{figure}
 
+Der erste Versuch, siehe Listing \ref{lis:one} und die entsprechende Abbildung \ref{fig:one}, sind vom Ziel noch recht weit entfernt. Die Erstellung der Punkte des Quaders über TikZ-Nodes hat zur Folge, dass die Linien vor den Boxen der Nodes enden; sieht interessant aus, ist aber nicht das, was wir wollen.
 
-\section{Verbesserungen}
+\begin{lstlisting}[label={lis:one},caption={Code für Abbildung \ref{fig:one}}]
+\documentclass[border=5mm,tikz]{standalone}
+\begin{document}
+
+\begin{tikzpicture}
+% Nullpunkt
+\node (null) at (0,0){0};
+% Achsen
+\node (x) at (-4,-4){x};
+\node (y) at (6,0){y};
+\node (z) at (0,6){z};
+% untere Ebene
+\node (A) at (-3,-3){A};
+\node (B) at (3,-3){B};
+\node (C) at (5,0){C};
+
+%obere Ebene
+\node (E) at (-3,3){E};
+\node (F) at (3,3){F};
+\node (G) at (5,5){G};
+\node (H) at (0,5){H};
+
+% gestrichelt Linien
+\draw[dashed](null) -- (C);
+\draw[dashed](null) -- (A);
+\draw[dashed](null) -- (H);
+
+% restliche Linien
+\draw(A) -- (x);
+\draw(H) -- (z);
+\draw(A) -- (E);
+\draw(A) -- (B) -- (F);
+\draw(B) -- (C);
+\draw(E) -- (F) -- (G) -- (H) --(E);
+\draw(G) -- (C) -- (y);
+\end{tikzpicture}
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}
+% Nullpunkt
+\node (null) at (0,0){0};
+% Achsen
+\node (x) at (-4,-4){x};
+\node (y) at (6,0){y};
+\node (z) at (0,6){z};
+% untere Ebene
+\node (A) at (-3,-3){A};
+\node (B) at (3,-3){B};
+\node (C) at (5,0){C};
+
+%obere Ebene
+\node (E) at (-3,3){E};
+\node (F) at (3,3){F};
+\node (G) at (5,5){G};
+\node (H) at (0,5){H};
+
+% gestrichelt Linien
+\draw[dashed](null) -- (C);
+\draw[dashed](null) -- (A);
+\draw[dashed](null) -- (H);
+
+% restliche Linien
+\draw(A) -- (x);
+\draw(H) -- (z);
+\draw(A) -- (E);
+\draw(A) -- (B) -- (F);
+\draw(B) -- (C);
+\draw(E) -- (F) -- (G) -- (H) --(E);
+\draw(G) -- (C) -- (y);
+\end{tikzpicture}
+\end{center}
+\caption{Ergebnis von Listing \ref{lis:one}}\label{fig:one}
+\end{figure}
+
+Glücklicherweise bietet TikZ neben den Nodes noch die Möglichkeit, Koordinaten zu setzen, die über die Optionen den entsprechenden Label-Text sowie die Position des Labels relativ zur Koordinate übergeben bekommen können. Neben \texttt{left}, \texttt{right}, \texttt{above} und \texttt{below} kann man auch den genauen Winkel angeben.
+
+\begin{lstlisting}[label={lis:two},caption={Code für Abbildung \ref{fig:two}}]
+\documentclass[border=5mm,tikz]{standalone}
+\begin{document}
+\begin{tikzpicture}
+\coordinate [label=120:0](zero) at (0,0);
+\coordinate [label=left:x](x) at (-4,-4);
+\coordinate [label=above:y] (y) at (6,0);
+\coordinate  [label=left:z](z) at (0,6);
+
+\coordinate [label=below:A] (A) at (-3,-3);
+\coordinate [label=below:B](B) at (3,-3);
+\coordinate [label=330:C](C) at (5,0);
+\coordinate [label=left:E] (E) at (-3,3);
+\coordinate [label=330:F](F) at (3,3);
+\coordinate [label=right:G] (G) at (5,5);
+\coordinate [label=120:H] (H) at (0,5);
+
+\draw[dashed](zero) -- (C);
+\draw[dashed](zero) -- (A);
+\draw[dashed](zero) -- (H);
+
+\draw(A) -- (x);
+\draw(H) -- (z);
+\draw(A) -- (E);
+\draw(A) -- (B) -- (F);
+\draw(B) -- (C);
+\draw(E) -- (F) -- (G) -- (H) --(E);
+\draw(G) -- (C) -- (y);
+\end{tikzpicture}
+\end{document}
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}
+\coordinate [label=120:0](zero) at (0,0);
+\coordinate [label=left:x](x) at (-4,-4);
+\coordinate [label=above:y] (y) at (6,0);
+\coordinate  [label=left:z](z) at (0,6);
+
+\coordinate [label=below:A] (A) at (-3,-3);
+\coordinate [label=below:B](B) at (3,-3);
+\coordinate [label=330:C](C) at (5,0);
+\coordinate [label=left:E] (E) at (-3,3);
+\coordinate [label=330:F](F) at (3,3);
+\coordinate [label=right:G] (G) at (5,5);
+\coordinate [label=120:H] (H) at (0,5);
+
+\draw[dashed](zero) -- (C);
+\draw[dashed](zero) -- (A);
+\draw[dashed](zero) -- (H);
+
+\draw(A) -- (x);
+\draw(H) -- (z);
+\draw(A) -- (E);
+\draw(A) -- (B) -- (F);
+\draw(B) -- (C);
+\draw(E) -- (F) -- (G) -- (H) --(E);
+\draw(G) -- (C) -- (y);
+\end{tikzpicture}
+\end{center}
+\caption{Ergebnis von Listing \ref{lis:two}}\label{fig:two}
+\end{figure}
+
+Das Ergebnis entspricht schon recht genau dem gesuchten Ergebnis, einer der Kommentatoren fragte aber zurecht, warum ich denn nicht direkt dreidimensionale Koordinaten nutzen würde. Der Grund dafür war schlichtweg, dass ich selbst mit dreidimensionalen Koordinaten noch nie gearbeitet hatte. Diese Zeichnung bot jetzt aber die passende Gelegenheit.
 
 \section{Der Sprung in die dritte Dimension}
+
+Der Sprung in die dritte Dimension ist recht simpel in TikZ. Man lädt die TikZ-Bibliothek \texttt{perspective} (siehe \url{https://tikz.dev/library-perspective}) und gibt die Koordinaten nicht mehr als 2-Tupel sondern als 3-Tupel an. Über die \texttt{3d view} Option des \texttt{tikzpicture} kann man dann noch die Projektion der 3D-Koordinaten auf die zweidimensionale Seite des Dokuments gesteuert werden.
+
+
+\begin{lstlisting}[label={lis:three},caption={Code für Abbildung \ref{fig:three}}]
+\documentclass[border=5mm,tikz]{standalone}
+\usetikzlibrary{perspective}
+
+\begin{document}
+\begin{tikzpicture}[3d view={100}{5}]
+
+\coordinate [label=120:0](zero) at (0,0,0);
+\coordinate [label=120:x](x) at (7,0,0);
+\coordinate [label=120:y](y) at (0,7,0);
+\coordinate [label=120:z](z) at (0,0,7);
+
+\coordinate [label=120:A](a) at (4,0,0);
+\coordinate [label=270:B](b) at (4,4,0);
+\coordinate [label=30:C](c) at (0,4,0);
+
+\coordinate [label=120:H](h) at (0,0,6);
+\coordinate [label=120:E](e) at (4,0,6);
+\coordinate [label=240:F](f) at (4,4,6);
+\coordinate [label=30:G](g) at (0,4,6);
+
+\draw[dashed] (zero) -- (a);
+\draw[dashed] (zero) -- (c);
+\draw [dashed](zero) -- (h);
+
+\draw (a) -- (b);
+\draw (c) -- (b);
+\draw (a) -- (x);
+\draw (c) -- (y);
+
+\draw (h) -- (z);
+\draw (a) -- (e);
+\draw (e) -- (h);
+\draw (h) -- (g);
+\draw (g) -- (f);
+\draw (e) -- (f);
+\draw (c) -- (g);
+\draw (b) -- (f);
+\end{tikzpicture}
+\end{document}
+
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}[3d view={100}{5}]
+
+\coordinate [label=120:0](zero) at (0,0,0);
+\coordinate [label=120:x](x) at (7,0,0);
+\coordinate [label=120:y](y) at (0,7,0);
+\coordinate [label=120:z](z) at (0,0,7);
+
+\coordinate [label=120:A](a) at (4,0,0);
+\coordinate [label=270:B](b) at (4,4,0);
+\coordinate [label=30:C](c) at (0,4,0);
+
+\coordinate [label=120:H](h) at (0,0,6);
+\coordinate [label=120:E](e) at (4,0,6);
+\coordinate [label=240:F](f) at (4,4,6);
+\coordinate [label=30:G](g) at (0,4,6);
+
+\draw[dashed] (zero) -- (a);
+\draw[dashed] (zero) -- (c);
+\draw [dashed](zero) -- (h);
+
+\draw (a) -- (b);
+\draw (c) -- (b);
+\draw (a) -- (x);
+\draw (c) -- (y);
+
+\draw (h) -- (z);
+\draw (a) -- (e);
+\draw (e) -- (h);
+\draw (h) -- (g);
+\draw (g) -- (f);
+\draw (e) -- (f);
+\draw (c) -- (g);
+\draw (b) -- (f);
+\end{tikzpicture}
+\end{center}
+\caption{Ergebnis von Listing \ref{lis:three}}\label{fig:three}
+\end{figure}
+
 
 \section{Spielereien}
 
