@@ -1,0 +1,81 @@
+%!TEX TS-program = LuaLateX
+\documentclass[12pt,ngerman]{dtk}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{showexpl,ifthen}
+\usepackage{xspace,listings,xcolor}
+\usepackage{babel}
+\usepackage{microtype}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{url}
+\usepackage{calc,tikz}
+\usetikzlibrary{positioning,calc}
+
+\definecolor{hellgelb}{rgb}{1,1,0.8}
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{1,0,0}
+\definecolor{colString}{rgb}{0,0.5,0}
+
+\lstset{language={[LaTeX]TeX},
+    float=hbp,%
+    basicstyle=\ttfamily\small, %
+    identifierstyle=\color{colIdentifier}, %
+    keywordstyle=\color{colKeys}, %
+    stringstyle=\color{colString}, %
+    commentstyle=\color{colComments}, %
+    columns=flexible, %
+    tabsize=2, %
+	morekeywords={draw,node,grid,coordinate},
+    extendedchars=true, %
+    showspaces=false, %
+    showstringspaces=false, %
+    backgroundcolor=\color{hellgelb}, %
+    breakautoindent=true, %
+    captionpos=b%
+}
+
+
+
+\lstset{
+  literate={ö}{{\"o}}1
+           {ä}{{\"a}}1
+           {ü}{{\"u}}1
+}
+
+\title{3D-Objekte mit TikZ -- Eine \TeX nische Reise} 
+\Author{Uwe}{Ziegenhagen}{Köln}
+
+%\markboth{Python\TeX}{Python\TeX}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Ausgehend von eine Frage im \LaTeX-Forum von Reddit betrachte ich in diesem Artikel einige Möglichkeiten, 3D-Objekte \enquote{auf Papier} respektive ins PDF zu bringen.
+\end{abstract}
+
+\section{Der erste Versuch}
+
+Es war im März diesen Jahres, als ein Nutzer im \LaTeX-Forum von Reddit (\url{https://www.reddit.com/r/LaTeX/}) fragte, wie man Grafiken analog zur der in Abbildung \ref{fig:template} in \LaTeX\ erstellen könnte.  Ich nahm dies als willkommene Gelegenheit, mal wieder ein wenig zu \enquote{T(r)ikZen}. TikZ bietet verschiedene Möglichkeiten für die Erstellung,  die wir uns im folgenden einmal anschauen werden.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.75\textwidth]{template}
+\caption{Die gewünschte Grafik, hier behelfsweise mit Affinity Designer erzeugt}\label{fig:template}
+\end{center}
+\end{figure}
+
+
+\section{Verbesserungen}
+
+\section{Der Sprung in die dritte Dimension}
+
+\section{Spielereien}
+
+
+\end{document}
+
+%https://www.reddit.com/r/LaTeX/comments/1bb99v5/how_do_i_make_these_plots/
